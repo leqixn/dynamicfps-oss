@@ -1,7 +1,7 @@
 // Updated 1:20 UTC+8 by Leqixn
 
 #include "DynamicFPS.hpp"
-#include "../../../../../SDK/SDK.hpp"
+#include "SDK/SDK.hpp"
 #include <Windows.h>
 
 void DynamicFPS::onTick() {
