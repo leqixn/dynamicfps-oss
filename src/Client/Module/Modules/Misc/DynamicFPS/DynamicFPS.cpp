@@ -1,7 +1,7 @@
-// Updated 12:59 UTC+8 by Leqixn
+// Updated 1:02 UTC+8 by Leqixn
 
 #include "DynamicFPS.hpp"
-#include "../../../../SDK/Minecraft.h"
+#include "../../../../../SDK/Minecraft.h"
 #include <Windows.h>
 
 void DynamicFPS::onTick() {
@@ -14,23 +14,25 @@ void DynamicFPS::onTick() {
 
     HWND foreground = GetForegroundWindow();
     char className[256];
-    GetClassNameA(foreground, className, sizeof(className));
-    
-    bool isGameFocused = (strcmp(className, "ApplicationFrameWindow") == 0 || 
-                          strcmp(className, "Windows.UI.Core.CoreWindow") == 0);
+    if (GetClassNameA(foreground, className, sizeof(className))) {
+        bool isGameFocused = (strcmp(className, "ApplicationFrameWindow") == 0 || 
+                              strcmp(className, "Windows.UI.Core.CoreWindow") == 0);
 
-    bool shouldThrottle = !isGameFocused || isAFK();
+        bool shouldThrottle = !isGameFocused || isAFK();
 
-    if (shouldThrottle) {
-        if (!isThrottled) {
-            originalLimit = options->framerateLimit;
-            isThrottled = true;
+        if (shouldThrottle) {
+            if (!isThrottled) {
+                originalLimit = options->framerateLimit;
+                isThrottled = true;
+            }
+            options->framerateLimit = !isGameFocused ? (int)unfocusedFPS.floatValue : (int)afkFPS.floatValue;
+        } 
+        else if (isThrottled) {
+            if (originalLimit.has_value()) {
+                options->framerateLimit = originalLimit.value();
+            }
+            isThrottled = false;
         }
-        options->framerateLimit = !isGameFocused ? (int)unfocusedFPS.floatValue : (int)afkFPS.floatValue;
-    } 
-    else if (isThrottled) {
-        options->framerateLimit = (originalLimit > 0) ? originalLimit : 165;
-        isThrottled = false;
     }
 }
 
@@ -44,10 +46,10 @@ bool DynamicFPS::isAFK() const {
 }
 
 void DynamicFPS::onDisable() {
-    if (isThrottled) {
+    if (isThrottled && originalLimit.has_value()) {
         auto instance = Minecraft::getClientInstance();
         if (instance && instance->getOptions()) {
-            instance->getOptions()->framerateLimit = (originalLimit > 0) ? originalLimit : 165;
+            instance->getOptions()->framerateLimit = originalLimit.value();
         }
     }
     isThrottled = false;
