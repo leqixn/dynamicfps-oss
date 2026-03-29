@@ -1,12 +1,12 @@
-// 12:47 UTC+8 Leqixn
+// Updated 12:49 UTC+8 by Leqixn
 
 #pragma once
-#include "../Module.h"
+#include "../../../Module.h"
 #include <optional>
 
 class DynamicFPS : public Module {
 public:
-    DynamicFPS() : Module("DynamicFPS", "Misc", "Reduces the FPS on your game while afk or on other tab") {
+    DynamicFPS() : Module("DynamicFPS", "Misc", "Resource optimization based on activity") {
         addSetting(&enabled);
         addSetting(&unfocusedFPS);
         addSetting(&afkFPS);
@@ -23,7 +23,6 @@ public:
 
 private:
     bool isAFK() const;
-    void setLimit(int fps);
     
     std::optional<int> originalLimit;
     bool isThrottled = false;
