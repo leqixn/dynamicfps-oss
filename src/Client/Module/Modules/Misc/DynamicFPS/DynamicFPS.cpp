@@ -1,20 +1,22 @@
-// Updated 1:02 UTC+8 by Leqixn
+// Updated 1:09 UTC+8 by Leqixn
 
 #include "DynamicFPS.hpp"
-#include "../../../../../SDK/Minecraft.h"
+#include "../../../../../SDK/SDK.hpp"
 #include <Windows.h>
 
 void DynamicFPS::onTick() {
     if (!enabled.boolValue) return;
 
-    auto instance = Minecraft::getClientInstance();
-    if (!instance || !instance->getOptions()) return;
+    auto context = GameContext::getInstance();
+    if (!context || !context->getClientInstance()) return;
 
-    auto options = instance->getOptions();
+    auto options = context->getClientInstance()->getOptions();
+    if (!options) return;
 
     HWND foreground = GetForegroundWindow();
     char className[256];
     if (GetClassNameA(foreground, className, sizeof(className))) {
+        
         bool isGameFocused = (strcmp(className, "ApplicationFrameWindow") == 0 || 
                               strcmp(className, "Windows.UI.Core.CoreWindow") == 0);
 
@@ -47,10 +49,5 @@ bool DynamicFPS::isAFK() const {
 
 void DynamicFPS::onDisable() {
     if (isThrottled && originalLimit.has_value()) {
-        auto instance = Minecraft::getClientInstance();
-        if (instance && instance->getOptions()) {
-            instance->getOptions()->framerateLimit = originalLimit.value();
-        }
-    }
-    isThrottled = false;
-}
+        auto context = GameContext::getInstance();
+        if (context && context->
