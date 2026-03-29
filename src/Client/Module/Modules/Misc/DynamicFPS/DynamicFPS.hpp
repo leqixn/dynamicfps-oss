@@ -1,4 +1,4 @@
-// Updated 1:10 UTC+8 by Leqixn
+// Updated 1:12 UTC+8 by Leqixn
 
 #pragma once
 #include "../../../Module.hpp"
@@ -7,6 +7,8 @@
 class DynamicFPS : public Module {
 public:
     DynamicFPS() : Module("DynamicFPS", "Misc", "Reduces FPS while AFK or on other Tab") {
+        this->name = "DynamicFPS"; 
+        
         addSetting(&enabled);
         addSetting(&unfocusedFPS);
         addSetting(&afkFPS);
